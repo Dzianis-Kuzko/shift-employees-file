@@ -1,4 +1,4 @@
-package com.korona.app.controller;
+package com.korona.app.api.controller;
 
 import com.korona.app.core.ArgumentsProcessor;
 
@@ -9,8 +9,8 @@ public class ConsoleController {
         this.argumentsProcessor = argumentsProcessor;
     }
 
-    public void execute(String[] args){
-        argumentsProcessor.processArguments(args);
+    public void execute(String[] args) {
+        ArgumentsProcessor.process(args);
     }
 
 

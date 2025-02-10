@@ -1,12 +1,12 @@
 package com.korona.app.core;
 
-public final class ApplicationConfig {
+public final class CommandLineConfig {
     private final String sortField;
     private final String order;
     private final String output;
     private final String filePath;
 
-    public ApplicationConfig(String sortField, String order, String output, String filePath) {
+    public CommandLineConfig(String sortField, String order, String output, String filePath) {
         this.sortField = sortField;
         this.order = order;
         this.output = output;
