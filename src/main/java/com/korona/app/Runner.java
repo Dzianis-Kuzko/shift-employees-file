@@ -1,29 +1,33 @@
 package com.korona.app;
 
 import com.korona.app.api.controller.ConsoleController;
-import com.korona.app.core.ArgumentsProcessor;
-import com.korona.app.core.CommandLineConfig;
-import com.korona.app.core.entity.Employee;
+import com.korona.app.core.parser.CommandLineParser;
+import com.korona.app.core.mapper.EmployeeMapper;
+import com.korona.app.core.parser.EmployeeDataParser;
 import com.korona.app.core.reader.FileEmployeeReader;
+import com.korona.app.core.service.EmployeeDataContainer;
 import com.korona.app.core.service.EmployeeService;
-
-import java.util.Map;
+import com.korona.app.core.validator.EmployeeDataValidator;
 
 public class Runner {
     public static void main(String[] args) {
-        ArgumentsProcessor argumentsProcessor = new ArgumentsProcessor();
+        CommandLineParser commandLineParser = new CommandLineParser();
 
-        FileEmployeeReader fileEmployeeReader = new FileEmployeeReader();
+        EmployeeDataContainer employeeDataContainer = new EmployeeDataContainer();
+        EmployeeDataValidator employeeDataValidator = new EmployeeDataValidator();
+        EmployeeDataParser employeeDataParser = new EmployeeDataParser(employeeDataValidator);
+        FileEmployeeReader fileEmployeeReader = new FileEmployeeReader(employeeDataParser);
 
-        EmployeeService employeeService = new EmployeeService(fileEmployeeReader);
+        EmployeeMapper employeeMapper = new EmployeeMapper();
+        EmployeeService employeeService = new EmployeeService(employeeDataContainer, employeeMapper);
 
-        ConsoleController consoleController = new ConsoleController(argumentsProcessor);
+        fileEmployeeReader.readDataFromFile(employeeDataContainer);
+
+
+        ConsoleController consoleController = new ConsoleController(commandLineParser);
+
         consoleController.execute(args);
 
-
-        Map<String, Employee> managerByDepartment = employeeService.getManagersByDepartment();
-        System.out.println(employeeService.getSortedDepartments());
-        System.out.println(employeeService.getManagerByDepartment("Dev"));
 
 
     }

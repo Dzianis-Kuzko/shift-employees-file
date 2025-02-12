@@ -1,16 +1,21 @@
 package com.korona.app.api.controller;
 
-import com.korona.app.core.ArgumentsProcessor;
+import com.korona.app.core.CommandLineConfig;
+import com.korona.app.core.parser.CommandLineParser;
 
 public class ConsoleController {
-    private final ArgumentsProcessor argumentsProcessor;
+    private final CommandLineParser commandLineParser;
 
-    public ConsoleController(ArgumentsProcessor argumentsProcessor) {
-        this.argumentsProcessor = argumentsProcessor;
+    public ConsoleController(CommandLineParser commandLineParser) {
+        this.commandLineParser = commandLineParser;
     }
 
     public void execute(String[] args) {
-        ArgumentsProcessor.process(args);
+        commandLineParser.parse(args);
+
+        CommandLineConfig commandLineConfig = commandLineParser.getConfig();
+
+        System.out.println(commandLineConfig);
     }
 
 

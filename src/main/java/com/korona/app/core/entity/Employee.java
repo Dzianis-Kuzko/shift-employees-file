@@ -1,5 +1,6 @@
 package com.korona.app.core.entity;
 
+import com.korona.app.core.Position;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -29,19 +30,5 @@ public class Employee {
 
     private String department;
 
-    public enum Position {
-        EMPLOYEE("Employee"),
-        MANAGER("Manager");
-
-        private final String value;
-
-        Position(String value) {
-            this.value = value;
-        }
-
-        public String getValue() {
-            return value;
-        }
-    }
-
 }
+

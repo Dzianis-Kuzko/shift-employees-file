@@ -1,48 +1,43 @@
 package com.korona.app.core.service;
 
+import com.korona.app.api.dto.EmployeeDTO;
 import com.korona.app.core.entity.Employee;
-import com.korona.app.core.reader.FileEmployeeReader;
+import com.korona.app.core.mapper.EmployeeMapper;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 public class EmployeeService {
 
-    private final FileEmployeeReader fileEmployeeReader;
+    private final EmployeeDataContainer employeeDataContainer;
 
-    private final List<Employee> employees;
+    private final EmployeeMapper employeeMapper;
 
-    public EmployeeService(FileEmployeeReader fileEmployeeReader) {
-        this.fileEmployeeReader = fileEmployeeReader;
-        this.employees = fileEmployeeReader.readEmployeesFromFile();
+    public EmployeeService(EmployeeDataContainer employeeDataContainer, EmployeeMapper employeeMapper) {
+        this.employeeDataContainer = employeeDataContainer;
+        this.employeeMapper = employeeMapper;
     }
 
     public List<String> getSortedDepartments() {
-        return employees.stream()
-                .filter(emp -> emp.getPosition() == Employee.Position.MANAGER)
+        return employeeDataContainer.getManagers().stream()
                 .map(Employee::getDepartment)
                 .sorted()
                 .toList();
     }
 
-    public Employee getManagerByDepartment(String department) {
-        return employees.stream()
-                .filter(emp -> emp.getPosition() == Employee.Position.MANAGER)
+    public EmployeeDTO getManagerByDepartment(String department) {
+        Employee manager = employeeDataContainer.getManagers().stream()
                 .filter(emp -> emp.getDepartment().equals(department))
                 .findFirst()
-                .orElseThrow();
+                .get();
+
+        return employeeMapper.toEmployeeDTO(manager);
+
     }
 
-    public Map<String, Employee> getManagersByDepartment() {
-        return employees.stream()
-                .filter(emp -> emp.getPosition() == Employee.Position.MANAGER)
-                .collect(Collectors.toMap(Employee::getDepartment, emp -> emp, (e1, e2) -> e1));
-    }
-
-    public List<Employee> getSortedEmployeesByManagerId(String sortBy, String order, int managerId) {
+    public List<EmployeeDTO> getSortedEmployeesByManagerId(String sortBy, String order, int managerId) {
         if (sortBy == null && order != null) {
             throw new IllegalArgumentException("Ошибка: Порядок сортировки задан без указания типа сортировки.");
         }
@@ -54,7 +49,10 @@ public class EmployeeService {
         } else if ("salary".equals(sortBy)) {
             comparator = Comparator.comparing(Employee::getSalary);
         } else if (sortBy == null) {
-            return getEmployeesByManagerId(managerId);
+            return employeeDataContainer.getEmployeesByManagerId().get(managerId)
+                    .stream()
+                    .map(employeeMapper::toEmployeeDTO)
+                    .toList();
         } else {
             throw new IllegalArgumentException("Ошибка: Некорректный параметр сортировки. Доступные: name, salary.");
         }
@@ -65,30 +63,21 @@ public class EmployeeService {
             throw new IllegalArgumentException("Ошибка: Некорректный порядок сортировки. Доступные: asc, desc.");
         }
 
-        return employees.stream()
-                .filter(emp -> emp.getPosition() == Employee.Position.EMPLOYEE)
-                .filter(emp -> emp.getManagerId() == managerId)
+        return employeeDataContainer.getEmployeesByManagerId().get(managerId).stream()
                 .sorted(comparator)
+                .map(employeeMapper::toEmployeeDTO)
                 .toList();
     }
 
-    public List<Employee> getEmployeesWithoutManager() {
-        Set<Integer> managerIds = employees.stream()
-                .filter(emp -> emp.getPosition() == Employee.Position.MANAGER)
+    public List<EmployeeDTO> getEmployeesWithoutManager() {
+        Set<Integer> managerIds = employeeDataContainer.getManagers().stream()
                 .map(Employee::getId)
                 .collect(Collectors.toSet());
 
-        return employees.stream()
-                .filter(emp -> emp.getPosition() == Employee.Position.EMPLOYEE)
-                .filter(emp -> !managerIds.contains(emp.getManagerId()))
+        return employeeDataContainer.getEmployeesByManagerId().entrySet().stream()
+                .filter(entry -> !managerIds.contains(entry.getKey()))
+                .flatMap(entry -> entry.getValue().stream())
+                .map(employeeMapper::toEmployeeDTO)
                 .toList();
     }
-
-    private List<Employee> getEmployeesByManagerId(int managerId) {
-        return employees.stream()
-                .filter(emp -> emp.getPosition() == Employee.Position.EMPLOYEE)
-                .filter(emp -> emp.getManagerId() == managerId)
-                .toList();
-    }
-
 }
