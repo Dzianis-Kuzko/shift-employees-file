@@ -23,21 +23,19 @@ public class EmployeeService {
     public List<String> getSortedDepartments() {
         return employeeDataContainer.getManagers().stream()
                 .map(Employee::getDepartment)
+                .distinct()
                 .sorted()
                 .toList();
     }
 
-    public EmployeeDTO getManagerByDepartment(String department) {
-        Employee manager = employeeDataContainer.getManagers().stream()
+    public List<EmployeeDTO> getManagersByDepartment(String department) {
+        return employeeDataContainer.getManagers().stream()
                 .filter(emp -> emp.getDepartment().equals(department))
-                .findFirst()
-                .get();
-
-        return employeeMapper.toEmployeeDTO(manager);
-
+                .map(employeeMapper::toEmployeeDTO)
+                .toList();
     }
 
-    public List<EmployeeDTO> getSortedEmployeesByManagerId(String sortBy, String order, int managerId) {
+    public List<EmployeeDTO> getSortedEmployeesByManagerIds(String sortBy, String order, List<Integer> managerIds) {
         if (sortBy == null && order != null) {
             throw new IllegalArgumentException("Ошибка: Порядок сортировки задан без указания типа сортировки.");
         }
@@ -49,8 +47,9 @@ public class EmployeeService {
         } else if ("salary".equals(sortBy)) {
             comparator = Comparator.comparing(Employee::getSalary);
         } else if (sortBy == null) {
-            return employeeDataContainer.getEmployeesByManagerId().get(managerId)
-                    .stream()
+            return managerIds.stream()
+                    .flatMap(managerId -> employeeDataContainer.getEmployeesByManagerId()
+                            .getOrDefault(managerId, List.of()).stream())
                     .map(employeeMapper::toEmployeeDTO)
                     .toList();
         } else {
@@ -63,7 +62,9 @@ public class EmployeeService {
             throw new IllegalArgumentException("Ошибка: Некорректный порядок сортировки. Доступные: asc, desc.");
         }
 
-        return employeeDataContainer.getEmployeesByManagerId().get(managerId).stream()
+        return managerIds.stream()
+                .flatMap(managerId -> employeeDataContainer.getEmployeesByManagerId()
+                        .getOrDefault(managerId, List.of()).stream())
                 .sorted(comparator)
                 .map(employeeMapper::toEmployeeDTO)
                 .toList();
@@ -79,5 +80,9 @@ public class EmployeeService {
                 .flatMap(entry -> entry.getValue().stream())
                 .map(employeeMapper::toEmployeeDTO)
                 .toList();
+    }
+
+    public List<String> getInvalidData() {
+        return employeeDataContainer.getIncorrectData();
     }
 }
