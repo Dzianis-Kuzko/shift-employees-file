@@ -11,13 +11,13 @@ SHIFT тестовое задание
 --Библиотеки: Lombok 1.18.34
 
 --Примеры команд для запуска (можно использовать другие согласно требованиям):
--java -jar app-0.0.1.jar
--java -jar app-0.0.1.jar --output=file --path=out.txt
--java -jar app-0.0.1.jar -s=name --order=asc --output=file --path=out.txt
--java -jar app-0.0.1.jar --output=console
+ java -jar app-0.0.1.jar
+ java -jar app-0.0.1.jar --output=file --path=out.txt
+ java -jar app-0.0.1.jar -s=name --order=asc --output=file --path=out.txt
+ java -jar app-0.0.1.jar --output=console
 
 --Особенности реализации:
--Входной файл должен располагаться в папке data, находящейся в той же директории, что и JAR-файл.
+-Входной файл должен называться employees.txt и располагаться в папке data, находящейся в той же директории, что и JAR-файл.
 -В одном отделе могут быть несколько менеджеров.
 -У менеджеров может не быть сотрудников.
 -Корректное значение зарплаты – это вещественное число больше нуля.
