@@ -19,22 +19,29 @@ public class Runner {
         CommandLineConfig commandLineConfig = new CommandLineConfig();
         CommandLineParamValidator commandLineParamValidator = new CommandLineParamValidator();
         CommandLineParser commandLineParser = new CommandLineParser(commandLineConfig, commandLineParamValidator);
+        CommandLineConfigValidator commandLineConfigValidator = new CommandLineConfigValidator();
 
+        EmployeeMapper employeeMapper = new EmployeeMapper();
         EmployeeDataContainer employeeDataContainer = new EmployeeDataContainer();
         EmployeeDataValidator employeeDataValidator = new EmployeeDataValidator();
         EmployeeDataParser employeeDataParser = new EmployeeDataParser(employeeDataValidator);
-        FileEmployeeReader fileEmployeeReader = new FileEmployeeReader(employeeDataParser);
-
-        EmployeeMapper employeeMapper = new EmployeeMapper();
         EmployeeService employeeService = new EmployeeService(employeeDataContainer, employeeMapper);
 
+        FileEmployeeReader fileEmployeeReader = new FileEmployeeReader(employeeDataParser);
 
         View view = new View();
-        CommandLineConfigValidator commandLineConfigValidator = new CommandLineConfigValidator();
+
         StatisticsService statisticsService = new StatisticsService();
 
-        ConsoleController consoleController = new ConsoleController(commandLineParser, employeeService, view, commandLineConfigValidator, statisticsService, fileEmployeeReader, employeeDataContainer);
-
+        ConsoleController consoleController = new ConsoleController(
+                commandLineParser,
+                employeeService,
+                view,
+                commandLineConfigValidator,
+                statisticsService,
+                fileEmployeeReader,
+                employeeDataContainer
+        );
         consoleController.execute(args);
 
 
