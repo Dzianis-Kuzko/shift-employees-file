@@ -1,4 +1,4 @@
-package com.korona.app.core;
+package com.korona.app.core.config;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,5 +16,4 @@ public final class CommandLineConfig {
     private String order;
     private String output;
     private String filePath;
-
 }

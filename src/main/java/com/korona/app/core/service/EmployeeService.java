@@ -3,22 +3,23 @@ package com.korona.app.core.service;
 import com.korona.app.api.dto.EmployeeDTO;
 import com.korona.app.core.entity.Employee;
 import com.korona.app.core.mapper.EmployeeMapper;
+import lombok.AllArgsConstructor;
 
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@AllArgsConstructor
 public class EmployeeService {
+
+    public static final String SORT_BY_NAME = "name";
+    public static final String SORT_BY_SALARY = "salary";
+    public static final String ORDER_DESC = "desc";
 
     private final EmployeeDataContainer employeeDataContainer;
 
     private final EmployeeMapper employeeMapper;
-
-    public EmployeeService(EmployeeDataContainer employeeDataContainer, EmployeeMapper employeeMapper) {
-        this.employeeDataContainer = employeeDataContainer;
-        this.employeeMapper = employeeMapper;
-    }
 
     public List<String> getSortedDepartments() {
         return employeeDataContainer.getManagers().stream()
@@ -36,15 +37,12 @@ public class EmployeeService {
     }
 
     public List<EmployeeDTO> getSortedEmployeesByManagerIds(String sortBy, String order, List<Integer> managerIds) {
-        if (sortBy == null && order != null) {
-            throw new IllegalArgumentException("Ошибка: Порядок сортировки задан без указания типа сортировки.");
-        }
 
-        Comparator<Employee> comparator;
+        Comparator<Employee> comparator = null;
 
-        if ("name".equals(sortBy)) {
+        if (SORT_BY_NAME.equals(sortBy)) {
             comparator = Comparator.comparing(Employee::getName);
-        } else if ("salary".equals(sortBy)) {
+        } else if (SORT_BY_SALARY.equals(sortBy)) {
             comparator = Comparator.comparing(Employee::getSalary);
         } else if (sortBy == null) {
             return managerIds.stream()
@@ -52,14 +50,10 @@ public class EmployeeService {
                             .getOrDefault(managerId, List.of()).stream())
                     .map(employeeMapper::toEmployeeDTO)
                     .toList();
-        } else {
-            throw new IllegalArgumentException("Ошибка: Некорректный параметр сортировки. Доступные: name, salary.");
         }
 
-        if ("desc".equals(order)) {
+        if (ORDER_DESC.equals(order)) {
             comparator = comparator.reversed();
-        } else if (order != null && !"asc".equals(order)) {
-            throw new IllegalArgumentException("Ошибка: Некорректный порядок сортировки. Доступные: asc, desc.");
         }
 
         return managerIds.stream()

@@ -1,5 +1,6 @@
 package com.korona.app.core.reader;
 
+import com.korona.app.core.exception.FileReadException;
 import com.korona.app.core.parser.EmployeeDataParser;
 import com.korona.app.core.service.EmployeeDataContainer;
 
@@ -18,7 +19,7 @@ public class FileEmployeeReader {
         this.employeeDataParser = employeeDataParser;
     }
 
-    public void readDataFromFile(EmployeeDataContainer employeeDataContainer) {
+    public void readDataFromFile(EmployeeDataContainer employeeDataContainer)  {
 
         try (BufferedReader br = Files.newBufferedReader(FILE_PATH)) {
             String line;
@@ -26,9 +27,8 @@ public class FileEmployeeReader {
                 employeeDataParser.parseLine(line, employeeDataContainer);
             }
         } catch (IOException e) {
-            System.err.println("Ошибка при чтении файла: " + e.getMessage());
+            throw new FileReadException("Ошибка при чтении файла: " + FILE_PATH, e);
         }
     }
-
 
 }

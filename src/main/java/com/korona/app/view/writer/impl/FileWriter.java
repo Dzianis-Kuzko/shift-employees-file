@@ -1,5 +1,8 @@
 package com.korona.app.view.writer.impl;
 
+import com.korona.app.core.exception.FileCloseException;
+import com.korona.app.core.exception.FileCreationException;
+import com.korona.app.core.exception.FileWriteException;
 import com.korona.app.view.writer.OutputWriter;
 
 import java.io.BufferedWriter;
@@ -14,7 +17,7 @@ public class FileWriter implements OutputWriter {
         try {
             this.writer = Files.newBufferedWriter(path);
         } catch (IOException e) {
-            throw new RuntimeException("Ошибка при создании файла: " + e.getMessage());
+            throw new FileCreationException("Ошибка при создании файла: " + e.getMessage(), e);
         }
     }
 
@@ -24,7 +27,7 @@ public class FileWriter implements OutputWriter {
             writer.write(line);
             writer.newLine();
         } catch (IOException e) {
-            throw new RuntimeException("Ошибка при записи в файл: " + e.getMessage());
+            throw new FileWriteException("Ошибка при записи в файл: " + e.getMessage(), e);
         }
     }
 
@@ -33,7 +36,7 @@ public class FileWriter implements OutputWriter {
         try {
             writer.close();
         } catch (IOException e) {
-            System.err.println("Ошибка при закрытии файла.");
+            throw new FileCloseException("Ошибка при закрытии файла.", e);
         }
     }
 }

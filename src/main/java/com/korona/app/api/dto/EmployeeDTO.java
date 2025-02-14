@@ -1,6 +1,6 @@
 package com.korona.app.api.dto;
 
-import com.korona.app.core.Position;
+import com.korona.app.core.enums.Position;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

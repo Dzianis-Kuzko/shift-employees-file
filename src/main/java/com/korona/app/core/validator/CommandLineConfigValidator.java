@@ -1,6 +1,6 @@
 package com.korona.app.core.validator;
 
-import com.korona.app.core.CommandLineConfig;
+import com.korona.app.core.config.CommandLineConfig;
 
 public class CommandLineConfigValidator {
     public void validate(CommandLineConfig commandLineConfig){

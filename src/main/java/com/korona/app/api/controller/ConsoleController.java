@@ -1,8 +1,14 @@
 package com.korona.app.api.controller;
 
 import com.korona.app.api.dto.EmployeeDTO;
-import com.korona.app.core.CommandLineConfig;
+import com.korona.app.api.dto.StatisticsDTO;
+import com.korona.app.core.config.CommandLineConfig;
+import com.korona.app.core.exception.FileCloseException;
+import com.korona.app.core.exception.FileCreationException;
+import com.korona.app.core.exception.FileReadException;
 import com.korona.app.core.parser.CommandLineParser;
+import com.korona.app.core.reader.FileEmployeeReader;
+import com.korona.app.core.service.EmployeeDataContainer;
 import com.korona.app.core.service.EmployeeService;
 import com.korona.app.core.service.StatisticsService;
 import com.korona.app.core.validator.CommandLineConfigValidator;
@@ -24,29 +30,46 @@ public class ConsoleController {
     private final View view;
     private final CommandLineConfigValidator commandLineConfigValidator;
     private final StatisticsService statisticsService;
+    private final FileEmployeeReader fileEmployeeReader;
+    private final EmployeeDataContainer employeeDataContainer;
 
     public void execute(String[] args) {
+        CommandLineConfig commandLineConfig = null;
+
         try {
             commandLineParser.parse(args);
 
-            CommandLineConfig commandLineConfig = commandLineParser.getCommandLineConfig();
+            commandLineConfig = commandLineParser.getCommandLineConfig();
 
             commandLineConfigValidator.validate(commandLineConfig);
         } catch (IllegalArgumentException e) {
-            System.err.println(e.getMessage());
-            return;
+            view.printMessage(e.getMessage());
+            System.exit(0);
         }
 
+        loadData();
 
-        CommandLineConfig commandLineConfig = commandLineParser.getCommandLineConfig();
+        try {
+            setWriter(commandLineConfig);
 
-        setWriter(commandLineConfig);
+            render(commandLineConfig);
 
-        render(commandLineConfig);
+            view.close();
 
-        view.close();
+        } catch (FileCreationException | FileReadException | FileCloseException e) {
+            view.printMessage(e.getMessage());
+            System.exit(0);
+        }
 
-        System.out.println("------------------" + commandLineConfig);////////////---------
+    }
+
+    private void loadData() {
+        try {
+            fileEmployeeReader.readDataFromFile(employeeDataContainer);
+        } catch (FileReadException e) {
+            view.printMessage(e.getMessage());
+            System.exit(0);
+        }
     }
 
     private void render(CommandLineConfig commandLineConfig) {
@@ -86,10 +109,21 @@ public class ConsoleController {
         );
 
         sortedEmployeesByManagerIds.forEach(view::printEmployee);
+
+        renderStatistics(managersByDepartment, sortedEmployeesByManagerIds);
+
+    }
+
+    private void renderStatistics(List<EmployeeDTO> managers, List<EmployeeDTO> employees) {
+        StatisticsDTO statisticsDTO = statisticsService.calculateStatistics(managers, employees);
+
+        view.printStatistics(statisticsDTO);
     }
 
     private void renderInvalidData() {
+
         view.printMessage(INVALID_DATA_HEADER);
+
         employeeService.getInvalidData().forEach(view::printInvalidData);
         employeeService.getEmployeesWithoutManager().forEach(view::printEmployee);
     }
@@ -102,6 +136,4 @@ public class ConsoleController {
             view.setWriter(new ConsoleWriter());
         }
     }
-
-
 }

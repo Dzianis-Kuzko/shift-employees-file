@@ -1,6 +1,6 @@
 package com.korona.app.core.parser;
 
-import com.korona.app.core.CommandLineConfig;
+import com.korona.app.core.config.CommandLineConfig;
 import com.korona.app.core.validator.CommandLineParamValidator;
 
 public final class CommandLineParser {

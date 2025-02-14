@@ -1,13 +1,14 @@
 package com.korona.app;
 
 import com.korona.app.api.controller.ConsoleController;
-import com.korona.app.core.CommandLineConfig;
+import com.korona.app.core.config.CommandLineConfig;
 import com.korona.app.core.mapper.EmployeeMapper;
 import com.korona.app.core.parser.CommandLineParser;
 import com.korona.app.core.parser.EmployeeDataParser;
 import com.korona.app.core.reader.FileEmployeeReader;
 import com.korona.app.core.service.EmployeeDataContainer;
 import com.korona.app.core.service.EmployeeService;
+import com.korona.app.core.service.StatisticsService;
 import com.korona.app.core.validator.CommandLineConfigValidator;
 import com.korona.app.core.validator.CommandLineParamValidator;
 import com.korona.app.core.validator.EmployeeDataValidator;
@@ -27,12 +28,12 @@ public class Runner {
         EmployeeMapper employeeMapper = new EmployeeMapper();
         EmployeeService employeeService = new EmployeeService(employeeDataContainer, employeeMapper);
 
-        fileEmployeeReader.readDataFromFile(employeeDataContainer);
 
         View view = new View();
         CommandLineConfigValidator commandLineConfigValidator = new CommandLineConfigValidator();
+        StatisticsService statisticsService = new StatisticsService();
 
-        ConsoleController consoleController = new ConsoleController(commandLineParser, employeeService, view, commandLineConfigValidator);
+        ConsoleController consoleController = new ConsoleController(commandLineParser, employeeService, view, commandLineConfigValidator, statisticsService, fileEmployeeReader, employeeDataContainer);
 
         consoleController.execute(args);
 

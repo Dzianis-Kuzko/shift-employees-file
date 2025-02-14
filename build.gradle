@@ -15,19 +15,13 @@ repositories {
 
 ext {
     lombokVersion = '1.18.34'
-    junitVersion = '5.10.0'
+
 }
 
 dependencies {
 
     compileOnly "org.projectlombok:lombok:${lombokVersion}"
     annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
-
-    testImplementation platform("org.junit:junit-bom:${junitVersion}")
-    testImplementation "org.junit.jupiter:junit-jupiter"
-
-    testCompileOnly "org.projectlombok:lombok:${lombokVersion}"
-    testAnnotationProcessor "org.projectlombok:lombok:${lombokVersion}"
 
 }
 

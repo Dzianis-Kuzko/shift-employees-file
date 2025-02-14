@@ -1,7 +1,7 @@
 package com.korona.app.core.parser;
 
-import com.korona.app.core.Position;
 import com.korona.app.core.entity.Employee;
+import com.korona.app.core.enums.Position;
 import com.korona.app.core.service.EmployeeDataContainer;
 import com.korona.app.core.validator.EmployeeDataValidator;
 

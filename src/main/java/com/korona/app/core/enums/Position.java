@@ -1,4 +1,4 @@
-package com.korona.app.core;
+package com.korona.app.core.enums;
 
 public enum Position {
     EMPLOYEE("Employee"),
