@@ -36,7 +36,23 @@ public class EmployeeService {
                 .toList();
     }
 
-    public List<EmployeeDTO> getSortedEmployeesByManagerIds(String sortBy, String order, List<Integer> managerIds) {
+    /**
+     * Возвращает список сотрудников, отфильтрованных по заданным идентификаторам менеджеров и отсортированных
+     * по указанному критерию.
+     *
+     * @param sortBy   Поле, по которому следует сортировать сотрудников. Возможные значения:
+     *                 - {@code SORT_BY_NAME} — сортировка по имени.
+     *                 - {@code SORT_BY_SALARY} — сортировка по зарплате.
+     *                 - {@code null} — без сортировки.
+     * @param order    Порядок сортировки.
+     *                 - {@code ORDER_DESC} — сортировка по убыванию.
+     * @param managerIds Список идентификаторов менеджеров, по которым фильтруются сотрудники.
+     *                   Будут включены только сотрудники, управляемые указанными менеджерами.
+     * @return Список объектов {@link EmployeeDTO}, соответствующих критериям фильтрации и сортировки.
+     *         Если {@code sortBy} равно {@code null}, сотрудники возвращаются в исходном порядке.
+     *         Если {@code managerIds} пуст, возвращается пустой список.
+     */
+    public List<EmployeeDTO> getEmployeesFilteredByManagerIdsAndSorted(String sortBy, String order, List<Integer> managerIds) {
 
         Comparator<Employee> comparator = null;
 

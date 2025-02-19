@@ -102,7 +102,7 @@ public class ConsoleController {
                 .map(EmployeeDTO::getId)
                 .toList();
 
-        List<EmployeeDTO> sortedEmployeesByManagerIds = employeeService.getSortedEmployeesByManagerIds(
+        List<EmployeeDTO> sortedEmployeesByManagerIds = employeeService.getEmployeesFilteredByManagerIdsAndSorted(
                 commandLineConfig.getSortField(),
                 commandLineConfig.getOrder(),
                 managerIds
